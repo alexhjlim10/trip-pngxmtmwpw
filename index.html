@@ -41,8 +41,8 @@ button:disabled { opacity: .6; }
   var KEY = "ngy-trip-pw";
   var form = document.getElementById("f"), pwEl = document.getElementById("pw"), err = document.getElementById("err"), btn = document.getElementById("go");
   var dataPromise = null;
-  function loadData() { if (!dataPromise) dataPromise = fetch("data.bin", { cache: "force-cache" }).then(function (r) { if (!r.ok) throw new Error("load"); return r.arrayBuffer(); }); return dataPromise; }
-  async function open(pw, remember) {
+  function loadData(fresh) { if (!dataPromise || fresh) dataPromise = fetch("data.bin", { cache: fresh ? "reload" : "no-cache" }).then(function (r) { if (!r.ok) throw new Error("load"); return r.arrayBuffer(); }); return dataPromise; }
+  async function open(pw, remember, retried) {
     btn.disabled = true; err.textContent = ""; btn.textContent = "여는 중… (처음엔 조금 걸려요)";
     try {
       var buf = new Uint8Array(await loadData());
@@ -56,6 +56,10 @@ button:disabled { opacity: .6; }
       try { if (remember) localStorage.setItem(KEY, pw); else localStorage.removeItem(KEY); } catch (e) {}
       document.open(); document.write(html.slice(6)); document.close();
     } catch (e) {
+      // 폰에 남은 예전 파일 때문일 수 있으니, 비밀번호가 틀리면 한 번은 서버에서 새로 받아서 다시 시도
+      if (e.message === "pw" && !retried) { dataPromise = null; await loadData(true).catch(function () {}); return open(pw, remember, true); }
+      // 폰 키보드가 소문자로 입력한 경우를 위해 대문자로도 한 번 시도
+      if (e.message === "pw" && retried === true && pw !== pw.toUpperCase()) return open(pw.toUpperCase(), remember, "upper");
       try { localStorage.removeItem(KEY); } catch (x) {}
       err.textContent = e.message === "pw" ? "비밀번호가 맞지 않아요. 다시 입력해 주세요." : "페이지를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.";
       if (e.message !== "pw") dataPromise = null;
