@@ -41,7 +41,7 @@ button:disabled { opacity: .6; }
   var KEY = "ngy-trip-pw";
   var form = document.getElementById("f"), pwEl = document.getElementById("pw"), err = document.getElementById("err"), btn = document.getElementById("go");
   var dataPromise = null;
-  function loadData(fresh) { if (!dataPromise || fresh) dataPromise = fetch("data.bin", { cache: fresh ? "reload" : "no-cache" }).then(function (r) { if (!r.ok) throw new Error("load"); return r.arrayBuffer(); }); return dataPromise; }
+  function loadData(fresh) { if (!dataPromise || fresh) dataPromise = fetch("data.bin", { cache: fresh ? "reload" : "no-cache" }).then(function (r) { if (!r.ok) throw new Error("load"); try { sessionStorage.setItem("ngy-etag", r.headers.get("etag") || ""); } catch (e) {} return r.arrayBuffer(); }); return dataPromise; }
   async function open(pw, remember, retried) {
     btn.disabled = true; err.textContent = ""; btn.textContent = "여는 중… (처음엔 조금 걸려요)";
     try {
