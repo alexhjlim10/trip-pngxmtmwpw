@@ -8,6 +8,8 @@
 - `src.enc`: 암호화된 원본 (`template.html`, `script.js`)
 - `build/`: 공개해도 되는 재료 (지도 타일 `tiles.json`, Leaflet)
 - `tool.js`: 풀기·만들기·암호화 도구 (Node 18+, 외부 패키지 없음)
+- `secrets.enc`: 암호화된 키 (Claude API 키·GitHub 토큰). 사이트의 "Claude에게 요청"과 가족 공용 저장에 씀. `set_keys.ps1`(키_설정하기.bat)로만 만든다
+- `shared.enc`: 암호화된 가족 공용 일정 설정(날짜 고정·지점·켜고 끄기·시간). 사이트가 직접 저장·읽음. 기본 일정(script.js)보다 우선 적용됨
 
 ## 규칙 (중요)
 1. **비밀번호는 사용자에게 물어서 받는다.** 저장소, 커밋 메시지, 파일 어디에도 비밀번호를 적지 않는다.

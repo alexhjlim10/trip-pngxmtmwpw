@@ -54,6 +54,7 @@ button:disabled { opacity: .6; }
       var html = new TextDecoder().decode(plain);
       if (html.slice(0, 6) !== "NGYOK:") throw new Error("pw");
       try { if (remember) localStorage.setItem(KEY, pw); else localStorage.removeItem(KEY); } catch (e) {}
+      try { sessionStorage.setItem("ngy-pw", pw); } catch (e) {}
       document.open(); document.write(html.slice(6)); document.close();
     } catch (e) {
       // 폰에 남은 예전 파일 때문일 수 있으니, 비밀번호가 틀리면 한 번은 서버에서 새로 받아서 다시 시도

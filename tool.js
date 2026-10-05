@@ -88,7 +88,7 @@ if (cmd === "unpack") {
 } else if (cmd === "repass") {
   const [oldPw, newPw] = process.argv.slice(3);
   if (!oldPw || !newPw) { console.error("사용법: node tool.js repass 옛비밀번호 새비밀번호"); process.exit(2); }
-  for (const f of ["data.bin", "src.enc"]) fs.writeFileSync(P(f), encrypt(decrypt(fs.readFileSync(P(f)), oldPw), newPw));
+  for (const f of ["data.bin", "src.enc", "secrets.enc", "shared.enc"]) { if (!fs.existsSync(P(f))) continue; fs.writeFileSync(P(f), encrypt(decrypt(fs.readFileSync(P(f)), oldPw), newPw)); }
   console.log("비밀번호를 바꿨어요. git commit 후 push 하면 반영돼요.");
 } else {
   console.log("사용법: node tool.js unpack | build | check | repass 옛 새   (unpack/build/check는 NAGOYA_PW 필요)");

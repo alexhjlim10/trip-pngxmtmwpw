@@ -32,13 +32,14 @@ try {
   if ($p1 -ne $p2) { throw "두 새 비밀번호가 달라요." }
   if ($p1.Trim().Length -lt 4) { throw "새 비밀번호가 너무 짧아요." }
   Write-Host "다시 암호화하는 중..."
-  foreach ($f in "data.bin", "src.enc") {
+  foreach ($f in "data.bin", "src.enc", "secrets.enc", "shared.enc") {
     $path = Join-Path $here $f
+    if (-not (Test-Path $path)) { continue }
     $pt = Decrypt ([IO.File]::ReadAllBytes($path)) $old.Trim()
     [IO.File]::WriteAllBytes($path, (Encrypt $pt $p1.Trim()))
   }
   Write-Host "GitHub에 올리는 중..."
-  git add data.bin src.enc; git commit -q -m "Change page password"; git push -q
+  git add data.bin src.enc; if (Test-Path secrets.enc) { git add secrets.enc }; if (Test-Path shared.enc) { git add shared.enc }; git commit -q -m "Change page password"; git push -q
   Write-Host "`n완료! 1~2분 뒤부터 새 비밀번호로 열려요. 이미 열어 둔 폰은 다음에 새 비밀번호를 한 번 입력하면 돼요." -ForegroundColor Green
 } catch {
   Write-Host "`n$_" -ForegroundColor Red
